@@ -1,0 +1,9 @@
+{
+  "id": "kids-in-library",
+  "title": "Kids in Library",
+  "description": "Keep the library quiet by detecting loud signals.",
+  "components": ["microphone", "arduino", "led"],
+  "success": {
+    "condition": "LED lights when noise above threshold"
+  }
+}
