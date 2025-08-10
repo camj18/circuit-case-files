@@ -86,9 +86,8 @@ const CodeEditor = ({ spl, sampleIndex, onLog }) => {
     const interval = setInterval(() => {
       const SPL_VALUE = spl;
       const SAMPLE_INDEX = sampleIndex;
-      const logEvent = e => onLog(e);
+      const logEvent = e => onLog(e); // eslint-disable-line no-unused-vars
       try {
-        // eslint-disable-next-line no-eval
         eval(codeRef.current);
       } catch (e) {
         console.error(e);
