@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-const Results = ({ log, puzzle }) => {
+const Results = ({ log, puzzle, onAnalysis }) => {
   const [analysis, setAnalysis] = useState(null)
 
   useEffect(() => {
@@ -51,13 +51,15 @@ const Results = ({ log, puzzle }) => {
     const success =
       matched === noiseStarts.length && falseAlarms <= maxFalseAlarms
 
-    setAnalysis({
+    const result = {
       success,
       matched,
       noiseEvents: noiseStarts.length,
       falseAlarms,
-    })
-  }, [log, puzzle])
+    }
+    setAnalysis(result)
+    onAnalysis?.(result)
+  }, [log, puzzle, onAnalysis])
 
   if (!analysis) return <div className="results"></div>
 
