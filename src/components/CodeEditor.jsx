@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Blockly from 'blockly';
+import React, { useEffect, useRef, useState } from 'react'
+import Blockly from 'blockly'
 
 const CodeEditor = ({ spl, sampleIndex, onLog }) => {
-  const blocklyDiv = useRef(null);
-  const workspaceRef = useRef(null);
-  const codeRef = useRef('');
-  const [running, setRunning] = useState(false);
+  const blocklyDiv = useRef(null)
+  const workspaceRef = useRef(null)
+  const codeRef = useRef('')
+  const [running, setRunning] = useState(false)
 
   useEffect(() => {
     const toolbox = `
@@ -18,90 +18,109 @@ const CodeEditor = ({ spl, sampleIndex, onLog }) => {
         <block type="led"></block>
         <block type="buzzer"></block>
       </xml>
-    `;
+    `
 
-    workspaceRef.current = Blockly.inject(blocklyDiv.current, { toolbox });
+    workspaceRef.current = Blockly.inject(blocklyDiv.current, { toolbox })
 
     Blockly.Blocks['read_spl'] = {
       init: function () {
-        this.appendDummyInput().appendField('read SPL');
-        this.setOutput(true, 'Number');
-        this.setColour(230);
-        this.setTooltip('Read sound pressure level from microphone');
-      }
-    };
+        this.appendDummyInput().appendField('read SPL')
+        this.setOutput(true, 'Number')
+        this.setColour(230)
+        this.setTooltip('Read sound pressure level from microphone')
+      },
+    }
     Blockly.JavaScript['read_spl'] = function () {
-      return ['SPL_VALUE', Blockly.JavaScript.ORDER_ATOMIC];
-    };
+      return ['SPL_VALUE', Blockly.JavaScript.ORDER_ATOMIC]
+    }
 
     Blockly.Blocks['spl_greater'] = {
       init: function () {
-        this.appendValueInput('THRESH').setCheck('Number').appendField('SPL >');
-        this.setOutput(true, 'Boolean');
-        this.setColour(210);
-        this.setTooltip('Compare SPL to threshold');
-      }
-    };
+        this.appendValueInput('THRESH').setCheck('Number').appendField('SPL >')
+        this.setOutput(true, 'Boolean')
+        this.setColour(210)
+        this.setTooltip('Compare SPL to threshold')
+      },
+    }
     Blockly.JavaScript['spl_greater'] = function (block) {
-      const value = Blockly.JavaScript.valueToCode(block, 'THRESH', Blockly.JavaScript.ORDER_NONE) || 0;
-      return [`SPL_VALUE > ${value}`, Blockly.JavaScript.ORDER_ATOMIC];
-    };
+      const value =
+        Blockly.JavaScript.valueToCode(
+          block,
+          'THRESH',
+          Blockly.JavaScript.ORDER_NONE
+        ) || 0
+      return [`SPL_VALUE > ${value}`, Blockly.JavaScript.ORDER_ATOMIC]
+    }
 
     Blockly.Blocks['led'] = {
       init: function () {
-        this.appendValueInput('STATE').setCheck('Boolean').appendField('set LED');
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
-        this.setColour(160);
-        this.setTooltip('Control LED');
-      }
-    };
+        this.appendValueInput('STATE')
+          .setCheck('Boolean')
+          .appendField('set LED')
+        this.setPreviousStatement(true)
+        this.setNextStatement(true)
+        this.setColour(160)
+        this.setTooltip('Control LED')
+      },
+    }
     Blockly.JavaScript['led'] = function (block) {
-      const state = Blockly.JavaScript.valueToCode(block, 'STATE', Blockly.JavaScript.ORDER_NONE) || 'false';
-      return `if(${state}) logEvent({type: 'alarm', component: 'led', state: true, index: SAMPLE_INDEX});\n`;
-    };
+      const state =
+        Blockly.JavaScript.valueToCode(
+          block,
+          'STATE',
+          Blockly.JavaScript.ORDER_NONE
+        ) || 'false'
+      return `if(${state}) logEvent({type: 'alarm', component: 'led', state: true, index: SAMPLE_INDEX});\n`
+    }
 
     Blockly.Blocks['buzzer'] = {
       init: function () {
-        this.appendValueInput('STATE').setCheck('Boolean').appendField('set buzzer');
-        this.setPreviousStatement(true);
-        this.setNextStatement(true);
-        this.setColour(20);
-        this.setTooltip('Control buzzer');
-      }
-    };
+        this.appendValueInput('STATE')
+          .setCheck('Boolean')
+          .appendField('set buzzer')
+        this.setPreviousStatement(true)
+        this.setNextStatement(true)
+        this.setColour(20)
+        this.setTooltip('Control buzzer')
+      },
+    }
     Blockly.JavaScript['buzzer'] = function (block) {
-      const state = Blockly.JavaScript.valueToCode(block, 'STATE', Blockly.JavaScript.ORDER_NONE) || 'false';
-      return `if(${state}) logEvent({type: 'alarm', component: 'buzzer', state: true, index: SAMPLE_INDEX});\n`;
-    };
-  }, []);
+      const state =
+        Blockly.JavaScript.valueToCode(
+          block,
+          'STATE',
+          Blockly.JavaScript.ORDER_NONE
+        ) || 'false'
+      return `if(${state}) logEvent({type: 'alarm', component: 'buzzer', state: true, index: SAMPLE_INDEX});\n`
+    }
+  }, [])
 
   const run = () => {
-    codeRef.current = Blockly.JavaScript.workspaceToCode(workspaceRef.current);
-    setRunning(true);
-  };
+    codeRef.current = Blockly.JavaScript.workspaceToCode(workspaceRef.current)
+    setRunning(true)
+  }
 
   useEffect(() => {
-    if (!running) return;
+    if (!running) return
     const interval = setInterval(() => {
-      const SPL_VALUE = spl;
-      const SAMPLE_INDEX = sampleIndex;
-      const logEvent = e => onLog(e); // eslint-disable-line no-unused-vars
+      const SPL_VALUE = spl
+      const SAMPLE_INDEX = sampleIndex
+      const logEvent = (e) => onLog(e) // eslint-disable-line no-unused-vars
       try {
-        eval(codeRef.current);
+        eval(codeRef.current)
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
-    }, 100);
-    return () => clearInterval(interval);
-  }, [running, spl, sampleIndex, onLog]);
+    }, 100)
+    return () => clearInterval(interval)
+  }, [running, spl, sampleIndex, onLog])
 
   return (
     <div className="code-editor">
       <div ref={blocklyDiv} style={{ height: 300, width: 400 }} />
       <button onClick={run}>Run</button>
     </div>
-  );
-};
+  )
+}
 
-export default CodeEditor;
+export default CodeEditor

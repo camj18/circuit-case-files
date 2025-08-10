@@ -1,1 +1,5 @@
-export default () => <h1>Workbench</h1>
+import React from 'react'
+
+export default function Workbench() {
+  return <h1>Workbench</h1>
+}
